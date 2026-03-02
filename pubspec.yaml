@@ -1,0 +1,47 @@
+name: zen_clock
+description: "ZenClock - 一个融合禅意美学的时钟应用"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  
+  # GetX 状态管理和路由
+  get: ^4.6.6
+  
+  # 触觉反馈
+  vibration: ^2.0.0
+  
+  # 音频播放
+  audioplayers: ^6.0.0
+  
+  # 本地存储
+  shared_preferences: ^2.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  
+  # 应用图标生成器
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+
+# 应用图标配置
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "design/app_icon_1024.png"
+  adaptive_icon_background: "#E8E4DC"
+  adaptive_icon_foreground: "design/app_icon_1024.png"
+  remove_alpha_ios: true
