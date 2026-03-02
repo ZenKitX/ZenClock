@@ -1,0 +1,73 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Build APK
+        run: flutter build apk --release
+      
+      - name: Get version from pubspec
+        id: version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | sed 's/+.*//')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Rename APK
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/ZenClock-${{ steps.version.outputs.version }}.apk
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ZenClock ${{ steps.version.outputs.version }}
+          files: |
+            build/app/outputs/flutter-apk/ZenClock-${{ steps.version.outputs.version }}.apk
+          body: |
+            ## ZenClock ${{ steps.version.outputs.version }}
+            
+            ### 下载
+            - [ZenClock-${{ steps.version.outputs.version }}.apk](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/ZenClock-${{ steps.version.outputs.version }}.apk)
+            
+            ### 更新内容
+            请查看 [docs/changelog.md](https://github.com/${{ github.repository }}/blob/main/docs/changelog.md)
+            
+            ### 功能特性
+            - ⏰ 完整的闹钟功能
+            - ⏱️ 高精度计时器
+            - ⏲️ 倒计时功能
+            - 🌍 世界时钟
+            - 💫 触觉反馈系统
+            - 📜 禅意语录
+            - 🎨 Neumorphic 设计
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
